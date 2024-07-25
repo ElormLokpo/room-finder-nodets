@@ -8,8 +8,8 @@ export class App{
     private token:string = process.env.BOT_TOKEN as string;
 
     constructor(commands:CommandInterface[]){
-        
         this.bot = new Telegraf(this.token);
+        this.initializeDatabase();
         this.initializeCommands(commands);
     }
 
@@ -17,6 +17,15 @@ export class App{
         commands.forEach(command=>{
             command.initializeCommands(this.bot);
         })
+    }
+
+    public initializeDatabase(){
+        mongoose.Promise = Promise;
+        mongoose.connect(process.env.MONGO_URL as string);
+        mongoose.connection.on("error",(error:Error)=>{
+            console.log(error);
+        })
+        console.log("Database Connected");
     }
 
     public launchBot(){
